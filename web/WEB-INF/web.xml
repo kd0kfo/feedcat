@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.4"
+	 xmlns="http://java.sun.com/xml/ns/j2ee"
+	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	 xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+  <servlet>
+    <servlet-name>List</servlet-name>
+    <servlet-class>com.davecoss.tomcat.feedcat.List</servlet-class>
+    </servlet>
+
+  <servlet-mapping>
+    <servlet-name>List</servlet-name>
+    <url-pattern>/list</url-pattern>
+    </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FeedList</servlet-name>
+    <servlet-class>com.davecoss.tomcat.feedcat.FeedList</servlet-class>
+    </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FeedList</servlet-name>
+    <url-pattern>/feed/*</url-pattern>
+    </servlet-mapping>
+
+    
+
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Wildcard means whole app requires authentication</web-resource-name>
+      <url-pattern>/*</url-pattern>
+      <http-method>GET</http-method>
+      <http-method>POST</http-method>
+      </web-resource-collection>
+
+    <auth-constraint>
+      <role-name>feedreader</role-name>
+      </auth-constraint>
+
+    <user-data-constraint>
+      <!-- transport-guarantee can be CONFIDENTIAL, INTEGRAL, or NONE -->
+      <transport-guarantee>CONFIDENTIAL</transport-guarantee>
+      <!-- <transport-guarantee>NONE</transport-guarantee> -->
+      </user-data-constraint>
+    </security-constraint>
+
+  <login-config>
+    <auth-method>FORM</auth-method>
+    <form-login-config>
+      <form-login-page>/login.html</form-login-page>
+      <form-error-page>/login-failed.html</form-error-page>
+      </form-login-config>
+    </login-config>
+
+    <env-entry>
+    	<env-entry-name>properties-path</env-entry-name>
+	<env-entry-type>java.lang.String</env-entry-type>
+        <env-entry-value>ENV{OPENSHIFT_DATA_DIR}/freecat.properties</env-entry-value> 
+    </env-entry>
+</web-app>
