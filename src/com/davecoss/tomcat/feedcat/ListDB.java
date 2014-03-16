@@ -3,9 +3,6 @@ package com.davecoss.tomcat.feedcat;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
-
-import org.sqlite.*;
 
 public class ListDB {
 	
