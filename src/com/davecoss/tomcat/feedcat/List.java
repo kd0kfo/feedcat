@@ -1,12 +1,8 @@
 package com.davecoss.tomcat.feedcat;
 
 import java.io.*;
-import java.net.URL;
 import java.sql.SQLException;
-import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Properties;
-
 import javax.servlet.http.*;
 import javax.servlet.*;
 
