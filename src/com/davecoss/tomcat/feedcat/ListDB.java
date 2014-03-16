@@ -91,6 +91,26 @@ public class ListDB {
 		}
 	}
 	
+	public boolean removeFeed(int id) throws SQLException {
+		String sql = String.format("delete from feeds where id == %d;", id);
+		Statement stat = newStatement();
+		try {
+			return stat.execute(sql);
+		} finally {
+			stat.close();
+		}
+	}
+	
+	public boolean removeFeed(String url) throws SQLException {
+		String sql = String.format("delete from feeds where url == '%s';", url);
+		Statement stat = newStatement();
+		try {
+			return stat.execute(sql);
+		} finally {
+			stat.close();
+		}
+	}
+	
 	private Statement newStatement() throws SQLException {
 		return conn.createStatement(); 
 	}
