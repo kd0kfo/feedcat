@@ -10,11 +10,13 @@ String username = request.getRemoteUser();
 <head>
 <meta http-equiv="Content-Type" 
   content="text/html; charset=UTF-8" />
-<title>Feed list</title>
+<title>New Feed</title>
 </head>
 <body>
-<p>Hello, <%= username %>. Welcome to the feed <a href="list">list</a>.</p>
-<p><a href="newfeed.jsp">Add a new feed</a></p>
-<p><a href="logout.jsp">Logout</a></p>
+<form action="/feedcat/new" method="get">
+<label for="url">Feed URL:</label>
+<input name="url" type="text"/>
+<input name="submit" type="submit" value="Submit"/>
+</form>
 </body>
 </html>

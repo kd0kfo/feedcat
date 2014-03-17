@@ -45,14 +45,15 @@ public class List extends HttpServlet {
 		Iterator<ListDB.IDURLPair> it = feeds.iterator();
 		while(it.hasNext()) {
 			ListDB.IDURLPair pair = it.next();
-			FeedScraper feedScraper = new FeedScraper(pair.url);
+			FeedScraper feedScraper = new FeedScraper(pair.url, pair.id);
 			Feed feed = feedScraper.readFeed();
 			String pubdate = feed.getPubDate();
 			if(pubdate.length() != 0)
 				pubdate = String.format("(Last Updated %s)", pubdate);
 			String readURL = String.format("/feedcat/feed/%d", pair.id);
-			String msg = String.format("<li><a href=\"%s\">%s</a>: %s %s</li>",
-					readURL, feed.getTitle(), feed.getDescription(), pubdate);
+			String feedURL = String.format("/feedcat/feedinfo/%d", pair.id);
+			String msg = String.format("<li><a href=\"%s\">%s</a> (<a href=\"%s\">Info</a>): %s %s</li>",
+					readURL, feed.getTitle(), feedURL, feed.getDescription(), pubdate);
 			out.println(msg);
 		}
 	}
