@@ -72,6 +72,16 @@ public class ListDB {
 				result.close();
 		}
 	}
+
+	public boolean removeFeed(int id) throws SQLException {
+		PreparedStatement stat = conn.prepareStatement("delete from feeds where id == ?;");
+		stat.setInt(1, id);
+		try {
+			return stat.execute();
+		} finally {
+			stat.close();
+		}
+	}
 	
 	public List<IDURLPair> getFeedList() throws SQLException {
 		PreparedStatement stat = conn.prepareStatement("select * from feeds;");
