@@ -11,10 +11,13 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Characters;
+import javax.xml.stream.events.StartElement;
 import javax.xml.stream.events.XMLEvent;
 
 
@@ -27,10 +30,12 @@ public class FeedScraper {
   static final String LINK = "link";
   static final String AUTHOR = "author";
   static final String ITEM = "item";
+  static final String ENTRY = "entry"; // added for atom.
   static final String PUB_DATE = "pubDate";
   static final String GUID = "guid";
 
   final URL url;
+  private Integer dbid = null;
 
   public FeedScraper(String feedUrl) {
     try {
@@ -39,6 +44,15 @@ public class FeedScraper {
       throw new RuntimeException(e);
     }
   }
+  
+  public FeedScraper(String feedUrl, Integer dbid) {
+	    try {
+	      this.url = new URL(feedUrl);
+	      this.dbid = dbid;
+	    } catch (MalformedURLException e) {
+	      throw new RuntimeException(e);
+	    }
+	  }
 
   public Feed readFeed() {
     Feed feed = null;
@@ -63,13 +77,14 @@ public class FeedScraper {
       while (eventReader.hasNext()) {
         XMLEvent event = eventReader.nextEvent();
         if (event.isStartElement()) {
-          String localPart = event.asStartElement().getName()
+        	StartElement startElement = event.asStartElement();
+          String localPart = startElement.getName()
               .getLocalPart();
           switch (localPart) {
-          case ITEM:
+          case ITEM: case ENTRY:
             if (isFeedHeader) {
               isFeedHeader = false;
-              feed = new Feed(title, link, description, language,
+              feed = new Feed(url, title, link, description, language,
                   copyright, pubdate);
             }
             event = eventReader.nextEvent();
@@ -81,7 +96,13 @@ public class FeedScraper {
             description = getCharacterData(event, eventReader);
             break;
           case LINK:
-            link = getCharacterData(event, eventReader);
+        	  Attribute selfAttrib = startElement.getAttributeByName(new QName("self"));
+        	  Attribute hrefAttrib = startElement.getAttributeByName(new QName("href"));
+        	  if(selfAttrib != null && hrefAttrib != null) {
+        		  link = hrefAttrib.getValue();
+        	  } else {
+        		  link = getCharacterData(event, eventReader);
+        	  }
             break;
           case GUID:
             guid = getCharacterData(event, eventReader);
@@ -100,7 +121,8 @@ public class FeedScraper {
             break;
           }
         } else if (event.isEndElement()) {
-          if (event.asEndElement().getName().getLocalPart() == (ITEM)) {
+        	String tagtype = event.asEndElement().getName().getLocalPart();
+          if (tagtype.equals(ITEM) || tagtype.equals(ENTRY)) {
             FeedMessage message = new FeedMessage();
             message.setAuthor(author);
             message.setDescription(description);
@@ -135,5 +157,17 @@ public class FeedScraper {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+  
+  public Integer getDBId() {
+	  return dbid;
+  }
+  
+  public void setDBId(int dbid) {
+	  this.dbid = new Integer(dbid);
+  }
+  
+  public void setDBId(Integer dbid) {
+	  this.dbid = dbid;
   }
 } 

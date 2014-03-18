@@ -1,5 +1,6 @@
 package com.davecoss.tomcat.feedcat;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Stack;
  */
 public class Feed {
 
+  final URL url;
   final String title;
   final String link;
   final String description;
@@ -19,8 +21,9 @@ public class Feed {
 
   final List<FeedMessage> entries = new ArrayList<FeedMessage>();
 
-  public Feed(String title, String link, String description, String language,
+  public Feed(URL url, String title, String link, String description, String language,
       String copyright, String pubDate) {
+	this.url = url;
     this.title = title;
     this.link = link;
     this.description = description;
@@ -46,6 +49,10 @@ public class Feed {
     return title;
   }
 
+  public URL getUrl() {
+	  return url;
+  }
+  
   public String getLink() {
     return link;
   }

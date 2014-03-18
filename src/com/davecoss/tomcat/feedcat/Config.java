@@ -13,12 +13,23 @@ import javax.servlet.ServletException;
 
 public class Config {
 	
-	public static File getPropertiesFile() throws ServletException, NamingException {
+	public static String getEnvValue(String key) throws NamingException {
 		Context env = (Context)(new InitialContext()).lookup("java:comp/env");
-		String path = (String) env.lookup("properties-path");
+		String propValue = (String) env.lookup(key);
+		int envLoc = propValue.indexOf("ENV{");
+        int endTag = propValue.indexOf("}");
+        if(envLoc != -1 && endTag != -1) {
+        	String envName = propValue.substring(envLoc + 4, endTag);
+        	propValue = propValue.replace(propValue.substring(envLoc, endTag + 1), System.getenv(envName));
+        }
+        return propValue;
+	}
+	
+	public static File getPropertiesFile() throws ServletException, NamingException{
+		String path = getEnvValue("properties-path");
 		File propertiesFile = new File(path);
         if(!propertiesFile.exists()) 
-                throw new ServletException("Missing properties file.");
+                throw new ServletException("Missing properties file: " + propertiesFile.getAbsolutePath());
         return propertiesFile;
 	}
 	
@@ -30,7 +41,7 @@ public class Config {
 	        propsInput = new FileInputStream(propertiesFile);
 	        props.load(propsInput);
 	        return props.getProperty(key, def);
-		} finally {
+	    } finally {
 			if(propsInput != null)
 				propsInput.close();
 		}

@@ -23,7 +23,26 @@
     <url-pattern>/feed/*</url-pattern>
     </servlet-mapping>
 
-    
+  <servlet>
+    <servlet-name>NewFeed</servlet-name>
+    <servlet-class>com.davecoss.tomcat.feedcat.NewFeed</servlet-class>
+    </servlet>
+
+  <servlet-mapping>
+    <servlet-name>NewFeed</servlet-name>
+    <url-pattern>/new</url-pattern>
+    </servlet-mapping>
+
+  <servlet>
+    <servlet-name>FeedInfo</servlet-name>
+    <servlet-class>com.davecoss.tomcat.feedcat.FeedInfo</servlet-class>
+    </servlet>
+
+  <servlet-mapping>
+    <servlet-name>FeedInfo</servlet-name>
+    <url-pattern>/feedinfo/*</url-pattern>
+    </servlet-mapping>
+  
 
   <security-constraint>
     <web-resource-collection>
@@ -55,6 +74,6 @@
     <env-entry>
     	<env-entry-name>properties-path</env-entry-name>
 	<env-entry-type>java.lang.String</env-entry-type>
-        <env-entry-value>ENV{OPENSHIFT_DATA_DIR}/freecat.properties</env-entry-value> 
+        <env-entry-value>ENV{OPENSHIFT_DATA_DIR}/feedcat.properties</env-entry-value> 
     </env-entry>
 </web-app>
