@@ -2,6 +2,7 @@ package com.davecoss.tomcat.feedcat;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ListDB {
@@ -18,6 +19,8 @@ public class ListDB {
         try {
         	stat = conn.prepareStatement("create table if not exists feeds (id INTEGER PRIMARY KEY, url STRING UNIQUE, title STRING, misc STRING);");
         	stat.execute();
+        	stat = conn.prepareStatement("create table if not exists feed_entries (id INTEGER PRIMARY KEY, feedid INTEGER NOT NULL, entryid STRING NOT NULL, unixtime INTEGER, FOREIGN KEY(feedid) REFERENCES feeds(id));");
+        	stat.execute();
         } finally {
         	if(stat != null)
         		stat.close();
@@ -26,6 +29,20 @@ public class ListDB {
 	
 	public void close() throws SQLException {
 		conn.close();
+	}
+	
+	public boolean markRead(int feedid, String entryID) throws SQLException {
+		Date now = new Date();
+		
+		PreparedStatement stat = conn.prepareStatement("insert or replace into feed_entries values (null, ? , ? , ?);");
+		stat.setInt(1, feedid);
+		stat.setString(2, entryID);
+		stat.setLong(3, now.getTime() / 1000L);
+		try {
+			return stat.execute();
+		} finally {
+			stat.close();
+		}
 	}
 	
 	public boolean putFeed(Feed feed) throws SQLException {

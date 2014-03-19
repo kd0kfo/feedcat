@@ -35,6 +35,7 @@ public class FeedScraper {
   static final String ENTRY = "entry"; // added for atom.
   static final String PUB_DATE = "pubDate";
   static final String GUID = "guid";
+  static final String ENTRY_ID = "id";
 
   final URL url;
   private Integer dbid = null;
@@ -108,7 +109,7 @@ public class FeedScraper {
         		  link = getCharacterData(event, eventReader);
         	  }
             break;
-          case GUID:
+          case GUID: case ENTRY_ID:
             guid = getCharacterData(event, eventReader);
             break;
           case LANGUAGE:
