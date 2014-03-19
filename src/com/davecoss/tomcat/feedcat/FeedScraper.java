@@ -6,10 +6,12 @@ package com.davecoss.tomcat.feedcat;
  * version 1.0 http://www.vogella.com/tutorials/RSSFeed/article.html
  */
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
@@ -96,10 +98,12 @@ public class FeedScraper {
             description = getCharacterData(event, eventReader);
             break;
           case LINK:
-        	  Attribute selfAttrib = startElement.getAttributeByName(new QName("self"));
+        	  Attribute relAttrib = startElement.getAttributeByName(new QName("rel"));
         	  Attribute hrefAttrib = startElement.getAttributeByName(new QName("href"));
-        	  if(selfAttrib != null && hrefAttrib != null) {
-        		  link = hrefAttrib.getValue();
+        	  if(relAttrib != null && hrefAttrib != null) {
+        		  if(relAttrib.getValue().equals("alternate")) {
+        			  link = hrefAttrib.getValue();
+        		  }
         	  } else {
         		  link = getCharacterData(event, eventReader);
         	  }
