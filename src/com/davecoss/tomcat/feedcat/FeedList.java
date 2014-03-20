@@ -1,7 +1,6 @@
 package com.davecoss.tomcat.feedcat;
 
 import java.io.*;
-import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.Stack;
 
@@ -19,6 +18,8 @@ public class FeedList extends HttpServlet {
 		PrintWriter out = response.getWriter();
 		out.println("<p><a href=\"/feedcat/list\">Return to List of Feeds</a></p>");
 	
+		
+		String type = request.getParameter("type");// Possible values are "new" and "all". Null implies "new"
 		String path = request.getRequestURI();
 		
 		String[] tokens = path.split("/");
@@ -49,7 +50,13 @@ public class FeedList extends HttpServlet {
 				out.println("<ul id=\"entries\">");
 				Stack<FeedMessage> messages = feed.getMessageStack();
 				while(!messages.empty()) {
-					printEntry(messages.pop(), id, out);
+					FeedMessage message = messages.pop();
+					if(type == null || type.equals("new")) {
+						if(!db.isNew(message)) {
+							continue;
+						}
+					}
+					printEntry(message, id, out);
 				}
 				out.println("</ul>");
 			}
@@ -78,11 +85,11 @@ public class FeedList extends HttpServlet {
 			extra = "<p>" + extra + "</p>";
 		String readURL = null;
 		try {
-			readURL = String.format("/feedcat/markread/%d/%s", feedid, URLEncoder.encode(message.getGuid(), URL_ENCODE_TYPE)); // TODO: Make this better... This is just for prototyping.
-		} catch(UnsupportedEncodingException uee) {
+			readURL = String.format("(<a href=\"/feedcat/markread/%d/%s\">Read</a>) ", feedid, message.digestGuid()); // TODO: Make this better... This is just for prototyping.
+		} catch(Exception uee) {
 			readURL = "";
 		}
-		String msg = String.format("<li>(<a href=\"%s\">Read</a>) <a href=\"%s\">%s</a>%s</li>", readURL, message.getLink(), message.getTitle(), extra);
+		String msg = String.format("<li>%s<a href=\"%s\">%s</a>%s</li>", readURL, message.getLink(), message.getTitle(), extra);
 		out.println(msg);
 	}
 	

@@ -1,6 +1,7 @@
 package com.davecoss.tomcat.feedcat;
 
 import java.sql.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +41,17 @@ public class ListDB {
 		stat.setLong(3, now.getTime() / 1000L);
 		try {
 			return stat.execute();
+		} finally {
+			stat.close();
+		}
+	}
+	
+	public boolean isNew(FeedMessage message)  throws SQLException, NoSuchAlgorithmException {
+		PreparedStatement stat = conn.prepareStatement("select count(*) from feed_entries where entryid == ?;");
+		stat.setString(1, message.digestGuid());
+		try {
+			ResultSet result = stat.executeQuery();
+			return result.getInt(1) == 0;
 		} finally {
 			stat.close();
 		}

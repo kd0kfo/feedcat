@@ -1,5 +1,8 @@
 package com.davecoss.tomcat.feedcat;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /*
  * Represents one RSS message
  */
@@ -51,6 +54,16 @@ public class FeedMessage {
     this.guid = guid;
   }
 
+  public String digestGuid() throws NoSuchAlgorithmException {
+	MessageDigest md = MessageDigest.getInstance("MD5");
+	md.update(guid.getBytes());
+	byte[] md5bytes = md.digest();
+	StringBuffer sb = new StringBuffer();
+	for (int i = 0; i < md5bytes.length; i++)
+		sb.append(Integer.toString((md5bytes[i] & 0xff) + 0x100, 16).substring(1));
+	return sb.toString();
+  }
+  
   @Override
   public String toString() {
     return "FeedMessage [title=" + title + ", description=" + description
