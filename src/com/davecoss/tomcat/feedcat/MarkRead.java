@@ -32,6 +32,7 @@ public class MarkRead extends HttpServlet {
 			out.println("Invalid ID: " + idString);
 			return;
 		}
+		out.println(String.format("<p><a href=\"/feedcat/feed/%d\">Return to Feed</a></p>", id));
 		
 		ListDB db = null;
 		try {

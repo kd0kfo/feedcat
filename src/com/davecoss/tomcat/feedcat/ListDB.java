@@ -4,6 +4,7 @@ import java.sql.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 public class ListDB {
@@ -55,6 +56,16 @@ public class ListDB {
 		} finally {
 			stat.close();
 		}
+	}
+	
+	public int countNew(Feed feed) throws SQLException, NoSuchAlgorithmException {
+		Iterator<FeedMessage> messages = feed.getMessages().iterator();
+		int newCount = 0;
+		while(messages.hasNext()) {
+			if(isNew(messages.next()))
+				newCount++;
+		}
+		return newCount;
 	}
 	
 	public boolean putFeed(Feed feed) throws SQLException {
