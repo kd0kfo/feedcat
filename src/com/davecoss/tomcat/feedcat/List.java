@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Iterator;
 import javax.servlet.http.*;
 import javax.servlet.*;
+import javax.xml.stream.XMLStreamException;
 
 public class List extends HttpServlet {
 	
@@ -48,7 +49,13 @@ public class List extends HttpServlet {
 		while(it.hasNext()) {
 			ListDB.IDURLPair pair = it.next();
 			FeedScraper feedScraper = new FeedScraper(pair.url, pair.id);
-			Feed feed = feedScraper.readFeed();
+			Feed feed = null;
+			try {
+				feed = feedScraper.readFeed();
+			} catch(XMLStreamException xmlse) {
+				out.println("<li>Error reading feed " + pair.url + "</li>");
+				continue;
+			}
 			String pubdate = feed.getPubDate();
 			String newCountString = " ";
 			if(pubdate.length() != 0)

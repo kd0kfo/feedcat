@@ -57,92 +57,90 @@ public class FeedScraper {
 	    }
 	  }
 
-  public Feed readFeed() {
-    Feed feed = null;
-    try {
-      boolean isFeedHeader = true;
-      // Set header values intial to the empty string
-      String description = "";
-      String title = "";
-      String link = "";
-      String language = "";
-      String copyright = "";
-      String author = "";
-      String pubdate = "";
-      String guid = "";
-
-      // First create a new XMLInputFactory
-      XMLInputFactory inputFactory = XMLInputFactory.newInstance();
-      // Setup a new eventReader
-      InputStream in = read();
-      XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
-      // read the XML document
-      while (eventReader.hasNext()) {
-        XMLEvent event = eventReader.nextEvent();
-        if (event.isStartElement()) {
-        	StartElement startElement = event.asStartElement();
-          String localPart = startElement.getName()
-              .getLocalPart();
-          switch (localPart) {
-          case ITEM: case ENTRY:
-            if (isFeedHeader) {
-              isFeedHeader = false;
-              feed = new Feed(url, title, link, description, language,
-                  copyright, pubdate);
-            }
-            event = eventReader.nextEvent();
-            break;
-          case TITLE:
-            title = getCharacterData(event, eventReader);
-            break;
-          case DESCRIPTION:
-            description = getCharacterData(event, eventReader);
-            break;
-          case LINK:
-        	  Attribute relAttrib = startElement.getAttributeByName(new QName("rel"));
-        	  Attribute hrefAttrib = startElement.getAttributeByName(new QName("href"));
-        	  if(relAttrib != null && hrefAttrib != null) {
-        		  if(relAttrib.getValue().equals("alternate")) {
-        			  link = hrefAttrib.getValue();
-        		  }
-        	  } else {
-        		  link = getCharacterData(event, eventReader);
-        	  }
-            break;
-          case GUID: case ENTRY_ID:
-            guid = getCharacterData(event, eventReader);
-            break;
-          case LANGUAGE:
-            language = getCharacterData(event, eventReader);
-            break;
-          case AUTHOR:
-            author = getCharacterData(event, eventReader);
-            break;
-          case PUB_DATE:
-            pubdate = getCharacterData(event, eventReader);
-            break;
-          case COPYRIGHT:
-            copyright = getCharacterData(event, eventReader);
-            break;
-          }
-        } else if (event.isEndElement()) {
-        	String tagtype = event.asEndElement().getName().getLocalPart();
-          if (tagtype.equals(ITEM) || tagtype.equals(ENTRY)) {
-            FeedMessage message = new FeedMessage();
-            message.setAuthor(author);
-            message.setDescription(description);
-            message.setGuid(guid);
-            message.setLink(link);
-            message.setTitle(title);
-            feed.getMessages().add(message);
-            event = eventReader.nextEvent();
-            continue;
-          }
-        }
-      }
-    } catch (XMLStreamException e) {
-      throw new RuntimeException(e);
-    }
+  public Feed readFeed() throws XMLStreamException {
+	  
+	  Feed feed = null;
+    
+	  boolean isFeedHeader = true;
+	  // Set header values intial to the empty string
+	  String description = "";
+	  String title = "";
+	  String link = "";
+	  String language = "";
+	  String copyright = "";
+	  String author = "";
+	  String pubdate = "";
+	  String guid = "";
+	
+	  // First create a new XMLInputFactory
+	  XMLInputFactory inputFactory = XMLInputFactory.newInstance();
+	  // Setup a new eventReader
+	  InputStream in = read();
+	  XMLEventReader eventReader = inputFactory.createXMLEventReader(in);
+	  // read the XML document
+	  while (eventReader.hasNext()) {
+	    XMLEvent event = eventReader.nextEvent();
+	    if (event.isStartElement()) {
+	    	StartElement startElement = event.asStartElement();
+	      String localPart = startElement.getName()
+	          .getLocalPart();
+	      switch (localPart) {
+	      case ITEM: case ENTRY:
+	        if (isFeedHeader) {
+	          isFeedHeader = false;
+	          feed = new Feed(url, title, link, description, language,
+	              copyright, pubdate);
+	        }
+	        event = eventReader.nextEvent();
+	        break;
+	      case TITLE:
+	        title = getCharacterData(event, eventReader);
+	        break;
+	      case DESCRIPTION:
+	        description = getCharacterData(event, eventReader);
+	        break;
+	      case LINK:
+	    	  Attribute relAttrib = startElement.getAttributeByName(new QName("rel"));
+	  Attribute hrefAttrib = startElement.getAttributeByName(new QName("href"));
+	  if(relAttrib != null && hrefAttrib != null) {
+		  if(relAttrib.getValue().equals("alternate")) {
+	    			  link = hrefAttrib.getValue();
+	    		  }
+	    	  } else {
+	    		  link = getCharacterData(event, eventReader);
+	    	  }
+	        break;
+	      case GUID: case ENTRY_ID:
+	        guid = getCharacterData(event, eventReader);
+	        break;
+	      case LANGUAGE:
+	        language = getCharacterData(event, eventReader);
+	        break;
+	      case AUTHOR:
+	        author = getCharacterData(event, eventReader);
+	        break;
+	      case PUB_DATE:
+	        pubdate = getCharacterData(event, eventReader);
+	        break;
+	      case COPYRIGHT:
+	        copyright = getCharacterData(event, eventReader);
+	        break;
+	      }
+	    } else if (event.isEndElement()) {
+	    	String tagtype = event.asEndElement().getName().getLocalPart();
+	      if (tagtype.equals(ITEM) || tagtype.equals(ENTRY)) {
+	        FeedMessage message = new FeedMessage();
+	        message.setAuthor(author);
+	        message.setDescription(description);
+	        message.setGuid(guid);
+	        message.setLink(link);
+	        message.setTitle(title);
+	        feed.getMessages().add(message);
+	        event = eventReader.nextEvent();
+	        continue;
+	      }
+	    }
+	}
     return feed;
   }
 
